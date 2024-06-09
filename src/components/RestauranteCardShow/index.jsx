@@ -44,7 +44,7 @@ function RestauranteCardShow({ restaurante, abrirDetalhes, toggleFavorite, isFav
         </View>
         <View style={styles.separator} />
         <View style={styles.typeContainer}>
-          <Text style={styles.type}>{restaurante.cuisinetypeid || 'N/A'}</Text>
+          <Text style={styles.type}>{restaurante.cuisinetype || 'N/A'}</Text>
         </View>
         <TouchableOpacity onPress={() => toggleFavorite(restaurante.restaurantid)}>
           <FontAwesome 
