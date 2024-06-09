@@ -91,33 +91,7 @@ const DrawerRoutes = ({route}) => {
             },
           }}
         />
-        <Drawer.Screen
-          name="CadastroEquipeUsuarios"
-          component={CadastroEquipeUsuarios}
-          options={{
-            title: "Cadastro Equipe de Usuários",
-            headerTitle: () => (
-              <View style={{ flexDirection: "row", alignItems: "right" }}>
-                <Image
-                  source={require("../../assets/logonova.png")}
-                  style={{
-                    width: 55,
-                    height: 55,
-                    marginLeft: 270,
-                    marginBottom: 20,
-                    marginTop: 20,
-                  }}
-                />
-              </View>
-            ),
-            headerStyle: {
-              backgroundColor: "#04233f",
-            },
-            drawerStyle: {
-              backgroundColor: "#04233f",
-            },
-          }}
-        />
+        
         <Drawer.Screen
           name="CadastroUsuario"
           component={CadastroUsuario}
@@ -145,60 +119,7 @@ const DrawerRoutes = ({route}) => {
             },
           }}
         />
-        <Drawer.Screen
-          name="Desenvolvedores"
-          component={Desenvolvedores}
-          options={{
-            title: "Desenvolvedores",
-            headerTitle: () => (
-              <View style={{ flexDirection: "row", alignItems: "right" }}>
-                <Image
-                  source={require("../../assets/logonova.png")}
-                  style={{
-                    width: 55,
-                    height: 55,
-                    marginLeft: 270,
-                    marginBottom: 20,
-                    marginTop: 20,
-                  }}
-                />
-              </View>
-            ),
-            headerStyle: {
-              backgroundColor: "#04233f",
-            },
-            drawerStyle: {
-              backgroundColor: "#04233f",
-            },
-          }}
-        />
-        <Drawer.Screen
-          name="Contato"
-          component={Contato}
-          options={{
-            title: "Contato",
-            headerTitle: () => (
-              <View style={{ flexDirection: "row", alignItems: "right" }}>
-                <Image
-                  source={require("../../assets/logonova.png")}
-                  style={{
-                    width: 55,
-                    height: 55,
-                    marginLeft: 270,
-                    marginBottom: 20,
-                    marginTop: 20,
-                  }}
-                />
-              </View>
-            ),
-            headerStyle: {
-              backgroundColor: "#04233f",
-            },
-            drawerStyle: {
-              backgroundColor: "#04233f",
-            },
-          }}
-        />
+        
         <Drawer.Screen
           name="RestaurantDetails"
           component={RestaurantDetails}
@@ -228,33 +149,7 @@ const DrawerRoutes = ({route}) => {
             },
           }}
         />
-         <Drawer.Screen
-          name="Favoritos"
-          component={FavoritesPage}
-          options={{
-            title: "Favoritos",
-            headerTitle: () => (
-              <View style={{ flexDirection: "row", alignItems: "right" }}>
-                <Image
-                  source={require("../../assets/logonova.png")}
-                  style={{
-                    width: 55,
-                    height: 55,
-                    marginLeft: 270,
-                    marginBottom: 20,
-                    marginTop: 20,
-                  }}
-                />
-              </View>
-            ),
-            headerStyle: {
-              backgroundColor: "#04233f",
-            },
-            drawerStyle: {
-              backgroundColor: "#04233f",
-            },
-          }}
-        />
+         
         <Drawer.Screen
           name="Login"
           component={Login}

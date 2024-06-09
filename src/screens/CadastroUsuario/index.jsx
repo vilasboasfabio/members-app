@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, ScrollView } from 'react-native';
 import axios from 'axios';
+import RNPickerSelect from 'react-native-picker-select';
 import styles from './styles';
-
 
 const UserRegistrationForm = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -20,9 +20,9 @@ const UserRegistrationForm = ({ navigation }) => {
 
     if (!name) validationErrors.name = 'Nome é obrigatório';
     if (!email) validationErrors.email = 'Email é obrigatório';
-    if (!password) validationErrors.password = 'Senha é obrigatório';
+    if (!password) validationErrors.password = 'Senha é obrigatória';
     if (!type) validationErrors.type = 'Tipo é obrigatório';
-    if (!bio) validationErrors.bio = 'Bio é obrigatório';
+    if (!bio) validationErrors.bio = 'Bio é obrigatória';
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -115,12 +115,15 @@ const UserRegistrationForm = ({ navigation }) => {
             {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
           </View>
           <View style={styles.inputGroup}>
-            <TextInput
+            <RNPickerSelect
+              placeholder={{ label: "Selecione o tipo de usuário", value: null }}
               value={type}
-              onChangeText={setType}
-              style={styles.input}
-              placeholder="Tipo (admin, user, chef)"
-              required
+              onValueChange={(value) => setType(value)}
+              items={[
+                { label: "Admin", value: "Admin" },
+                { label: "User", value: "User" },
+              ]}
+              style={pickerSelectStyles}
             />
             {errors.type && <Text style={styles.errorText}>{errors.type}</Text>}
           </View>
@@ -142,9 +145,33 @@ const UserRegistrationForm = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-     
     </ScrollView>
   );
+};
+
+const pickerSelectStyles = {
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30,
+    marginBottom: 10,
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30,
+    marginBottom: 10,
+  },
 };
 
 export default UserRegistrationForm;
