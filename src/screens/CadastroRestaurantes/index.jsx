@@ -36,6 +36,7 @@ const RestaurantForm = ({ navigation }) => {
   const [errors, setErrors] = useState({});
   const [restaurants, setRestaurants] = useState([]);
   const [editingRestaurant, setEditingRestaurant] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
@@ -181,12 +182,25 @@ const RestaurantForm = ({ navigation }) => {
     navigation.navigate("RestaurantDetails", { restaurantId });
   };
 
+  const applyFilters = () => {
+    let filteredRestaurants = restaurants;
+
+    if (searchQuery) {
+      filteredRestaurants = filteredRestaurants.filter(restaurante =>
+        restaurante.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    return filteredRestaurants;
+  };
+
+  const filteredRestaurants = applyFilters();
+
   return (
     <ScrollView
       style={styles.scrollView}
-     
     >
-      <View  style={styles.linha}></View>
+      <View style={styles.linha}></View>
       <ImageBackground
         source={require("../../../assets/fundocadastro1.png")}
         style={styles.image_bg}
@@ -477,10 +491,16 @@ const RestaurantForm = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-      <View  style={styles.linha}></View>
+      <View style={styles.linha}></View>
 
+      <TextInput
+        placeholder="Pesquisar restaurantes por nome"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        style={styles.inputSearch}
+      />
       <View>
-        {restaurants.map((restaurant) => (
+        {filteredRestaurants.map((restaurant) => (
           <CardCadastro
             key={restaurant.id}
             restaurante={restaurant}

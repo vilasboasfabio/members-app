@@ -107,6 +107,15 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 20,
     },
+    inputSearch:{
+        width: '90%',
+        padding: 10,
+        borderRadius: 10,
+        backgroundColor: 'rgb(120, 89, 77)',
+        marginBottom: 20,
+        marginLeft: 22,
+        color: "#fff",
+    }
 });
 
 export default styles;
