@@ -8,6 +8,7 @@ import {
   Platform,
   TouchableOpacity,
   ImageBackground,
+  Animated,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
@@ -37,6 +38,9 @@ const RestaurantForm = ({ navigation }) => {
   const [restaurants, setRestaurants] = useState([]);
   const [editingRestaurant, setEditingRestaurant] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [leftArrowAnim] = useState(new Animated.Value(0));
+  const [rightArrowAnim] = useState(new Animated.Value(0));
 
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
@@ -64,7 +68,9 @@ const RestaurantForm = ({ navigation }) => {
 
     if (!name) validationErrors.name = "Nome é obrigatório";
     if (!location) validationErrors.location = "Localização é obrigatória";
-    if (!validateLocation(location)) validationErrors.location = "Localização deve estar no formato: Logradouro, número - cidade, estado - país";
+    if (!validateLocation(location))
+      validationErrors.location =
+        "Localização deve estar no formato: Logradouro, número - cidade, estado - país";
     if (!priceLevel) validationErrors.priceLevel = "Nível de preço é obrigatório";
     if (!cuisineType) validationErrors.cuisineTypeId = "Tipo de cozinha é obrigatório";
     if (!chefName) validationErrors.chefName = "Nome do(a) chef é obrigatório";
@@ -129,7 +135,7 @@ const RestaurantForm = ({ navigation }) => {
   };
 
   const handleEdit = (restaurantId) => {
-    const restaurant = restaurants.find(r => r.restaurantid === restaurantId);
+    const restaurant = restaurants.find((r) => r.restaurantid === restaurantId);
     setName(restaurant.name);
     setLocation(restaurant.location);
     setPriceLevel(restaurant.pricelevel);
@@ -186,7 +192,7 @@ const RestaurantForm = ({ navigation }) => {
     let filteredRestaurants = restaurants;
 
     if (searchQuery) {
-      filteredRestaurants = filteredRestaurants.filter(restaurante =>
+      filteredRestaurants = filteredRestaurants.filter((restaurante) =>
         restaurante.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -196,10 +202,51 @@ const RestaurantForm = ({ navigation }) => {
 
   const filteredRestaurants = applyFilters();
 
+  const itemsPerPage = 20;
+  const numberOfPages = Math.ceil(filteredRestaurants.length / itemsPerPage);
+  const paginatedRestaurants = filteredRestaurants.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleNextPage = () => {
+    if (currentPage < numberOfPages) {
+      setCurrentPage(currentPage + 1);
+      Animated.sequence([
+        Animated.timing(rightArrowAnim, {
+          toValue: 15,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(rightArrowAnim, {
+          toValue: 0,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      Animated.sequence([
+        Animated.timing(leftArrowAnim, {
+          toValue: -15,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(leftArrowAnim, {
+          toValue: 0,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  };
+
   return (
-    <ScrollView
-      style={styles.scrollView}
-    >
+    <ScrollView style={styles.scrollView}>
       <View style={styles.linha}></View>
       <ImageBackground
         source={require("../../../assets/fundocadastro1.png")}
@@ -345,7 +392,9 @@ const RestaurantForm = ({ navigation }) => {
                 { id: "Domingo", name: "Domingo" },
               ]}
               uniqueKey="id"
-              onSelectedItemsChange={(selectedItems) => setOpeningDays(Array.isArray(selectedItems) ? selectedItems : [])}
+              onSelectedItemsChange={(selectedItems) =>
+                setOpeningDays(Array.isArray(selectedItems) ? selectedItems : [])
+              }
               selectedItems={Array.isArray(openingDays) ? openingDays : []}
               selectText="Selecione os dias de funcionamento"
               searchInputPlaceholderText="Buscar dias..."
@@ -370,22 +419,22 @@ const RestaurantForm = ({ navigation }) => {
                 marginTop: 29,
               }}
               styleInputGroup={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
                 borderRadius: 4,
                 height: 60,
               }}
               styleItemsContainer={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
                 maxHeight: 200,
               }}
               styleListContainer={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
               }}
               styleSelectorContainer={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
               }}
               styleDropdownMenu={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
               }}
               styleTextDropdownSelected={{
                 color: "#000",
@@ -394,7 +443,7 @@ const RestaurantForm = ({ navigation }) => {
                 color: "#000",
               }}
               styleDropdownMenuTextInput={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
                 borderRadius: 4,
                 height: 50,
                 paddingHorizontal: 10,
@@ -412,8 +461,14 @@ const RestaurantForm = ({ navigation }) => {
                 { id: "PIX", name: "PIX" },
               ]}
               uniqueKey="id"
-              onSelectedItemsChange={(selectedItems) => setPaymentMethods(Array.isArray(selectedItems) ? selectedItems : [])}
-              selectedItems={Array.isArray(paymentMethods) ? paymentMethods : []}
+              onSelectedItemsChange={(selectedItems) =>
+                setPaymentMethods(
+                  Array.isArray(selectedItems) ? selectedItems : []
+                )
+              }
+              selectedItems={
+                Array.isArray(paymentMethods) ? paymentMethods : []
+              }
               selectText="Selecione os métodos de pagamento"
               searchInputPlaceholderText="Buscar métodos..."
               tagRemoveIconColor="#666"
@@ -437,22 +492,22 @@ const RestaurantForm = ({ navigation }) => {
                 marginTop: 30,
               }}
               styleInputGroup={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
                 borderRadius: 4,
                 height: 40,
               }}
               styleItemsContainer={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
                 maxHeight: 200,
               }}
               styleListContainer={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
               }}
               styleSelectorContainer={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
               }}
               styleDropdownMenu={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
               }}
               styleTextDropdownSelected={{
                 color: "#000",
@@ -461,7 +516,7 @@ const RestaurantForm = ({ navigation }) => {
                 color: "#000",
               }}
               styleDropdownMenuTextInput={{
-                backgroundColor:  "rgba(206, 181, 145, 0.8)",
+                backgroundColor: "rgba(206, 181, 145, 0.8)",
                 borderRadius: 4,
                 height: 40,
                 paddingHorizontal: 10,
@@ -497,10 +552,10 @@ const RestaurantForm = ({ navigation }) => {
         placeholder="Pesquisar restaurantes por nome"
         value={searchQuery}
         onChangeText={setSearchQuery}
-        style={styles.inputSearch}
+        style={styles.input}
       />
       <View>
-        {filteredRestaurants.map((restaurant) => (
+        {paginatedRestaurants.map((restaurant) => (
           <CardCadastro
             key={restaurant.id}
             restaurante={restaurant}
@@ -510,7 +565,27 @@ const RestaurantForm = ({ navigation }) => {
           />
         ))}
       </View>
-      
+
+      <View style={styles.paginationContainer}>
+        <TouchableOpacity onPress={handlePreviousPage}>
+          <Animated.Text
+            style={[styles.arrow, { transform: [{ translateX: leftArrowAnim }] }]}
+          >
+            ◀
+          </Animated.Text>
+        </TouchableOpacity>
+        <Text style={styles.pageNumber}>
+          {currentPage} / {numberOfPages}
+        </Text>
+        <TouchableOpacity onPress={handleNextPage}>
+          <Animated.Text
+            style={[styles.arrow, { transform: [{ translateX: rightArrowAnim }] }]}
+          >
+            ▶
+          </Animated.Text>
+        </TouchableOpacity>
+      </View>
+
       <Footer />
     </ScrollView>
   );
@@ -547,7 +622,7 @@ const pickerSelectStyles = {
   iconContainer: {
     top: 10,
     right: 12,
-  }
+  },
 };
 
 export default RestaurantForm;

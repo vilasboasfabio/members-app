@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, ScrollView, StyleSheet, ImageBackground, TouchableOpacity, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RestauranteCardShow from '../../components/RestauranteCardShow';
 import Footer from '../../components/Footer';
@@ -16,6 +16,11 @@ const PaginaSobre = ({ navigation }) => {
   const [ratingFilter, setRatingFilter] = useState(null);
   const [cuisineFilter, setCuisineFilter] = useState(null);
   const [filtersVisible, setFiltersVisible] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const restaurantsPerPage = 20;
+  const [leftArrowAnim] = useState(new Animated.Value(0));
+  const [rightArrowAnim] = useState(new Animated.Value(0));
 
   const [fontsLoaded] = useFonts({ Lora_400Regular });
 
@@ -124,6 +129,45 @@ const PaginaSobre = ({ navigation }) => {
 
   const filteredRestaurants = applyFilters();
 
+  const numberOfPages = Math.ceil(filteredRestaurants.length / restaurantsPerPage);
+  const startIndex = (currentPage - 1) * restaurantsPerPage;
+  const endIndex = startIndex + restaurantsPerPage;
+  const paginatedRestaurants = filteredRestaurants.slice(startIndex, endIndex);
+
+  const handleNextPage = () => {
+    if (currentPage < numberOfPages) {
+      Animated.timing(rightArrowAnim, {
+        toValue: 10,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentPage(currentPage + 1);
+        Animated.timing(rightArrowAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      });
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      Animated.timing(leftArrowAnim, {
+        toValue: -10,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentPage(currentPage - 1);
+        Animated.timing(leftArrowAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      });
+    }
+  };
+
   if (!fontsLoaded) {
     return (
       <View>
@@ -197,11 +241,10 @@ const PaginaSobre = ({ navigation }) => {
               ]}
               style={pickerSelectStyles}
             />
-            
           </View>
         )}
 
-        {filteredRestaurants.map(restaurante => (
+        {paginatedRestaurants.map(restaurante => (
           <RestauranteCardShow
             key={restaurante.restaurantid}
             restaurante={restaurante}
@@ -210,6 +253,27 @@ const PaginaSobre = ({ navigation }) => {
             isFavorited={favoritos.includes(restaurante.restaurantid)}
           />
         ))}
+
+        <View style={styles.paginationContainer}>
+          <TouchableOpacity onPress={handlePreviousPage}>
+            <Animated.Text
+              style={[styles.arrow, { transform: [{ translateX: leftArrowAnim }] }]}
+            >
+              ◀
+            </Animated.Text>
+          </TouchableOpacity>
+          <Text style={styles.pageNumber}>
+            {currentPage} / {numberOfPages}
+          </Text>
+          <TouchableOpacity onPress={handleNextPage}>
+            <Animated.Text
+              style={[styles.arrow, { transform: [{ translateX: rightArrowAnim }] }]}
+            >
+              ▶
+            </Animated.Text>
+          </TouchableOpacity>
+        </View>
+
         <Footer />
       </View>
     </ScrollView>
@@ -306,7 +370,22 @@ const styles = StyleSheet.create({
   filterToggleButtonText: {
     color: '#F5E5AC',
     fontSize: 16,
-  }
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  arrow: {
+    fontSize: 24,
+    marginHorizontal: 20,
+    color: 'rgb(120, 89, 77)',
+  },
+  pageNumber: {
+    fontSize: 18,
+    color: '#F5E5AC',
+  },
 });
 
 export default PaginaSobre;

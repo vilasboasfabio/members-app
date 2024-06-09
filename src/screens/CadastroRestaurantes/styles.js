@@ -115,7 +115,22 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginLeft: 22,
         color: "#fff",
-    }
+    },
+    paginationContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 20,
+      },
+      arrow: {
+        fontSize: 24,
+        marginHorizontal: 20,
+        color: 'rgb(120, 89, 77)',
+      },
+      pageNumber: {
+        fontSize: 18,
+        color: 'rgba(206, 181, 145, 0.8)',
+      },
 });
 
 export default styles;
